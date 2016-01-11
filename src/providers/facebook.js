@@ -12,7 +12,7 @@ export function getOptions({ url, configCollection, scope }) {
   const { protocol, host } = url
   const query = {
     client_id: getOauthClientId(configCollection),
-    redirect_uri: getOauthProtocol(protocol) + `//${host}/_oatuh/facebook`,
+    redirect_uri: getOauthProtocol(protocol) + `//${host}/_oauth/facebook`,
     state: getOauthState(credentialToken),
     scope: scope || 'email'
   }
