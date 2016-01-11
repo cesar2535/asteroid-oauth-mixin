@@ -3,8 +3,9 @@ import urlParse from "url-parse";
 import openOauthPopup from "./lib/open-oauth-popup";
 // TODO implement some other common providers such as facebook and twitter
 import * as google from "./providers/google";
+import * as facebook from './providers/facebook'
 
-const providers = {google};
+const providers = {google, facebook};
 
 export function init ({endpoint, platform}) {
     this.subscribe("meteor.loginServiceConfiguration");
