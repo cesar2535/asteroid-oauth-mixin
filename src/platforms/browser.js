@@ -27,6 +27,7 @@ export default class BrowserOauthFlow {
     }
 
     _onMessage ({data, origin}) {
+      console.log(data, origin);
         try {
             const message = JSON.parse(data);
             if (parse(origin).host !== this.host) {
@@ -69,8 +70,10 @@ export default class BrowserOauthFlow {
         this._openPopup();
         this._startPolling();
         return this._credentialSecretPromise.then(credentialSecret => {
+            console.log('Before close Popup');
             this._stopPolling();
             this._closePopup();
+            console.log(credentialSecret);
             return credentialSecret;
         });
     }

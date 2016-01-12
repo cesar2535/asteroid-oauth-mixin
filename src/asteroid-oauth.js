@@ -27,6 +27,7 @@ export function loginWith (providerName, scope) {
         configCollection: this.getServiceConfig(providerName),
         scope
     });
+    console.log(options);
     return openOauthPopup(
         this.oauth.platform,
         this.oauth.url.host,

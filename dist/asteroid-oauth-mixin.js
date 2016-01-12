@@ -112,6 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        configCollection: this.getServiceConfig(providerName),
 	        scope: scope
 	    });
+	    console.log(options);
 	    return (0, _libOpenOauthPopup2["default"])(this.oauth.platform, this.oauth.url.host, options.credentialToken, options.loginUrl, function (oauth) {
 	        return _this.login({ oauth: oauth });
 	    });
@@ -653,8 +654,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._openPopup();
 	            this._startPolling();
 	            return this._credentialSecretPromise.then(function (credentialSecret) {
+	                console.log('Before close Popup');
 	                _this3._stopPolling();
 	                _this3._closePopup();
+	                console.log(credentialSecret);
 	                return credentialSecret;
 	            });
 	        }
