@@ -599,8 +599,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var request = JSON.stringify({
 	        credentialToken: this.credentialToken
 	      });
-	      console.log(this.popup.document.querySelector('#config'));
 	      this.intervalId = window.setInterval(function () {
+	        console.log(_this2.popup.document.querySelector('#config'));
 	        _this2.popup.postMessage(request, _this2.host);
 	      }, 100);
 	      window.addEventListener("message", this._onMessage.bind(this));

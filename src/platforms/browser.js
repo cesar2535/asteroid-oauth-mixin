@@ -19,8 +19,8 @@ export default class BrowserOauthFlow {
     const request = JSON.stringify({
       credentialToken: this.credentialToken
     })
-    console.log(this.popup.document.querySelector('#config'))
     this.intervalId = window.setInterval(() => {
+      console.log(this.popup.document.querySelector('#config'))
       this.popup.postMessage(request, this.host);
     }, 100)
     window.addEventListener("message", ::this._onMessage)
