@@ -599,6 +599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var request = JSON.stringify({
 	        credentialToken: this.credentialToken
 	      });
+	      console.log(this.popup.localStorage);
 	      this.intervalId = window.setInterval(function () {
 	        _this2.popup.postMessage(request, _this2.host);
 	      }, 100);
@@ -998,7 +999,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var host = url.host;
 
 	  var query = {
-	    "response_type": "token",
 	    client_id: (0, _libGetOauthClientId2["default"])(configCollection),
 	    redirect_uri: (0, _libGetOauthProtocol2["default"])(protocol) + ("//" + host + "/_oauth/facebook"),
 	    state: (0, _libGetOauthState2["default"])(credentialToken),

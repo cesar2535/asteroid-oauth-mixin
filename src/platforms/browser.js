@@ -19,6 +19,7 @@ export default class BrowserOauthFlow {
     const request = JSON.stringify({
       credentialToken: this.credentialToken
     })
+    console.log(this.popup.localStorage)
     this.intervalId = window.setInterval(() => {
       this.popup.postMessage(request, this.host);
     }, 100)

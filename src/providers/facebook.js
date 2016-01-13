@@ -11,7 +11,6 @@ export function getOptions({ url, configCollection, scope }) {
   const credentialToken = generateCredentialToken()
   const { protocol, host } = url
   const query = {
-    "response_type": "token",
     client_id: getOauthClientId(configCollection),
     redirect_uri: getOauthProtocol(protocol) + `//${host}/_oauth/facebook`,
     state: getOauthState(credentialToken),
