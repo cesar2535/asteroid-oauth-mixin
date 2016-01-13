@@ -719,6 +719,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this._resolvePromise = resolve;
 	      _this._rejectPromise = reject;
 	    });
+	    this._onTabUpdated = this._onTabUpdated.bind(this);
 	  }
 
 	  _createClass(ChromeOauthFlow, [{
@@ -736,7 +737,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_onTabUpdated',
 	    value: function _onTabUpdated(tabId, changeInfo) {
-	      console.group('Chrome Tab Updated');
 	      var url = changeInfo.url;
 	      console.log('%cTab\'s Id:', 'color: #4AF2A1', tabId);
 	      console.log('%cTab\'s URL:', 'color: #6638F0', url);
@@ -757,7 +757,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        console.error(err);
 	        return;
 	      }
-
+	      console.log('Hash Token:', hash.credentialToken);
+	      console.log('Hash Token:', this.credentialToken);
 	      if (hash.credentialToken === this.credentialToken) {
 	        this._resolvePromise({
 	          credentialToken: hash.credentialToken,
@@ -766,7 +767,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        chrome.tabs.remove(id);
 	      }
-	      console.groupEnd();
 	    }
 	  }, {
 	    key: '_openPopup',

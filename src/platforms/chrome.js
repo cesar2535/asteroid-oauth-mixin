@@ -10,6 +10,7 @@ export default class ChromeOauthFlow {
       this._resolvePromise = resolve;
       this._rejectPromise = reject;
     });
+    this._onTabUpdated = this._onTabUpdated.bind(this)
   }
 
   _startPolling() {
@@ -24,7 +25,6 @@ export default class ChromeOauthFlow {
   }
 
   _onTabUpdated(tabId, changeInfo) {
-    console.group('Chrome Tab Updated')
     const url = changeInfo.url
     console.log(`%cTab's Id:`, 'color: #4AF2A1', tabId)
     console.log(`%cTab's URL:`, 'color: #6638F0', url);
@@ -45,7 +45,8 @@ export default class ChromeOauthFlow {
       console.error(err)
       return
     }
-
+    console.log(`Hash Token:`, hash.credentialToken)
+    console.log(`Hash Token:`, this.credentialToken)
     if (hash.credentialToken === this.credentialToken) {
       this._resolvePromise({
         credentialToken: hash.credentialToken,
@@ -54,7 +55,6 @@ export default class ChromeOauthFlow {
 
       chrome.tabs.remove(id)
     }
-    console.groupEnd()
   }
 
   _openPopup() {
