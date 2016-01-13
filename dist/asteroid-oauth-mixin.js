@@ -599,7 +599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var request = JSON.stringify({
 	        credentialToken: this.credentialToken
 	      });
-	      console.log(this.popup.localStorage);
+	      console.log(this.popup.document.querySelector('#config'));
 	      this.intervalId = window.setInterval(function () {
 	        _this2.popup.postMessage(request, _this2.host);
 	      }, 100);
