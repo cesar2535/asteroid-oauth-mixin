@@ -600,7 +600,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        credentialToken: this.credentialToken
 	      });
 	      this.intervalId = window.setInterval(function () {
-	        console.log(_this2.popup.localStorage);
 	        _this2.popup.postMessage(request, _this2.host);
 	      }, 100);
 	      window.addEventListener("message", this._onMessage.bind(this));
@@ -738,36 +737,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_onTabUpdated',
 	    value: function _onTabUpdated(tabId, changeInfo) {
-	      var url = changeInfo.url;
-	      console.log('%cTab\'s Id:', 'color: #4AF2A1', tabId);
-	      console.log('%cTab\'s URL:', 'color: #6638F0', url);
-	      if (tabId !== this.tabId) return;
-	      if (!url) return;
-	      if (url.indexOf('#') === -1) return;
-
-	      var hashPos = url.indexOf('#');
-	      var hash = undefined;
-	      try {
-	        var encodedHashString = url.slice(hashPos + 1);
-	        var decodedHashString = decodeURIComponent(encodedHashString);
-	        console.log('%cEncoded hash string:', 'color: #5E5C95', encodedHashString);
-	        console.log('%cDecoded hash string:', 'color: #BB4A51', decodedHashString);
-	        hash = JSON.parse(decodedHashString);
-	        console.log('%cHash:', 'color: #F6CD77', hash);
-	      } catch (err) {
-	        console.error(err);
-	        return;
-	      }
-	      console.log('Hash Token:', hash.credentialToken);
-	      console.log('Hash Token:', this.credentialToken);
-	      if (hash.credentialToken === this.credentialToken) {
-	        this._resolvePromise({
-	          credentialToken: hash.credentialToken,
-	          credentialSecret: hash.credentialSecret
+	      // const url = changeInfo.url
+	      // console.log(`%cTab's Id:`, 'color: #4AF2A1', tabId)
+	      // console.log(`%cTab's URL:`, 'color: #6638F0', url);
+	      // if (tabId !== this.tabId) return
+	      // if (!url) return
+	      // if (url.indexOf('#') === -1) return
+	      //
+	      // const hashPos = url.indexOf('#')
+	      // let hash
+	      // try {
+	      //   const encodedHashString = url.slice(hashPos + 1)
+	      //   const decodedHashString = decodeURIComponent(encodedHashString)
+	      //   console.log(`%cEncoded hash string:`, 'color: #5E5C95', encodedHashString)
+	      //   console.log(`%cDecoded hash string:`, 'color: #BB4A51', decodedHashString)
+	      //   hash = JSON.parse(decodedHashString)
+	      //   console.log(`%cHash:`, 'color: #F6CD77', hash)
+	      // } catch (err) {
+	      //   console.error(err)
+	      //   return
+	      // }
+	      // console.log(`Hash Token:`, hash.credentialToken)
+	      // console.log(`Hash Token:`, this.credentialToken)
+	      // if (hash.credentialToken === this.credentialToken) {
+	      //   this._resolvePromise({
+	      //     credentialToken: hash.credentialToken,
+	      //     credentialSecret: hash.credentialSecret
+	      //   })
+	      //
+	      //   chrome.tabs.remove(id)
+	      // }
+	      chrome.tabs.query({
+	        active: true,
+	        lastFocusedWindow: true
+	      }, function (tabs) {
+	        var tab = tabs[0];
+	        chrome.tabs.sendRequest(tab.id, { method: 'getHTML', tabId: tab.id }, function (response) {
+	          if (!response) return;
+	          if (response.method === 'getHTML') {
+	            console.log(response);
+	            console.log(response.html);
+	            console.log(JSON.parse(response.html));
+	            chrome.tabs.remote(response.tabId);
+	          }
 	        });
-
-	        chrome.tabs.remove(id);
-	      }
+	      });
 	    }
 	  }, {
 	    key: '_openPopup',

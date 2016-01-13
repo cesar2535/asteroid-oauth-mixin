@@ -20,7 +20,6 @@ export default class BrowserOauthFlow {
       credentialToken: this.credentialToken
     })
     this.intervalId = window.setInterval(() => {
-      console.log(this.popup.localStorage)
       this.popup.postMessage(request, this.host);
     }, 100)
     window.addEventListener("message", ::this._onMessage)
