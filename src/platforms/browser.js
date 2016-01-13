@@ -2,9 +2,7 @@ import parse from "url-parse";
 
 export default class BrowserOauthFlow {
 
-  constructor({
-    credentialToken, host, loginUrl
-  }) {
+  constructor({ credentialToken, host, loginUrl }) {
     this.credentialToken = credentialToken;
     this.host = host;
     this.loginUrl = loginUrl;
@@ -60,9 +58,9 @@ export default class BrowserOauthFlow {
   _openPopup() {
     // Open the oauth popup
     console.group('Open Popup')
-    console.log('%cLogin URL', 'color: #F6CD77', this.loginUrl);
+    console.log('%cLogin URL', 'color: #4AF2A1', this.loginUrl);
     this.popup = window.open(this.loginUrl, "_blank", "location=no,toolbar=no");
-    console.log('%cPopup window', 'color: #BB4A51', this.popup)
+    console.log('%cPopup window', 'color: #6638F0', this.popup)
     // If the focus property exists, it's a function and it needs to be
     // called in order to focus the popup
     if (this.popup.focus) {

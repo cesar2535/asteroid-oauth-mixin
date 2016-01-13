@@ -77,11 +77,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// TODO implement some other common providers such as facebook and twitter
 
-	var _providersGoogle = __webpack_require__(7);
+	var _providersGoogle = __webpack_require__(8);
 
 	var google = _interopRequireWildcard(_providersGoogle);
 
-	var _providersFacebook = __webpack_require__(12);
+	var _providersFacebook = __webpack_require__(13);
 
 	var facebook = _interopRequireWildcard(_providersFacebook);
 
@@ -532,8 +532,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _platformsBrowser2 = _interopRequireDefault(_platformsBrowser);
 
+	var _platformsChrome = __webpack_require__(7);
+
+	var _platformsChrome2 = _interopRequireDefault(_platformsChrome);
+
 	var platformsOauthFlowClasses = {
-	    browser: _platformsBrowser2["default"]
+	    browser: _platformsBrowser2["default"],
+	    chrome: _platformsChrome2["default"]
 	};
 
 	function openOauthPopup(platform, host, credentialToken, loginUrl, afterCredentialSecretReceived) {
@@ -639,9 +644,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function _openPopup() {
 	      // Open the oauth popup
 	      console.group('Open Popup');
-	      console.log('%cLogin URL', 'color: #F6CD77', this.loginUrl);
+	      console.log('%cLogin URL', 'color: #4AF2A1', this.loginUrl);
 	      this.popup = window.open(this.loginUrl, "_blank", "location=no,toolbar=no");
-	      console.log('%cPopup window', 'color: #BB4A51', this.popup);
+	      console.log('%cPopup window', 'color: #6638F0', this.popup);
 	      // If the focus property exists, it's a function and it needs to be
 	      // called in order to focus the popup
 	      if (this.popup.focus) {
@@ -681,6 +686,127 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _urlParse = __webpack_require__(1);
+
+	var _urlParse2 = _interopRequireDefault(_urlParse);
+
+	var ChromeOauthFlow = (function () {
+	  function ChromeOauthFlow(_ref) {
+	    var _this = this;
+
+	    var credentialToken = _ref.credentialToken;
+	    var host = _ref.host;
+	    var loginUrl = _ref.loginUrl;
+
+	    _classCallCheck(this, ChromeOauthFlow);
+
+	    this.credentialToken = credentialToken;
+	    this.host = host;
+	    this.loginUrl = loginUrl;
+	    this._credentialSecretPromise = new Promise(function (resolve, reject) {
+	      _this._resolvePromise = resolve;
+	      _this._rejectPromise = reject;
+	    });
+	  }
+
+	  _createClass(ChromeOauthFlow, [{
+	    key: '_startPolling',
+	    value: function _startPolling() {
+	      console.group('Start Polling');
+	      console.log('%cHost', 'color: #4AF2A1', this.host);
+	      console.log('%cCredentail Token', 'color: #6638F0', this.credentialToken);
+	      var request = JSON.stringify({
+	        credentialToken: this.credentialToken
+	      });
+	      chrome.tabs.onUpdated.addListener(this._onTabUpdated);
+	      console.groupEnd();
+	    }
+	  }, {
+	    key: '_onTabUpdated',
+	    value: function _onTabUpdated(tabId, changeInfo) {
+	      console.group('Chrome Tab Updated');
+	      var url = changeInfo.url;
+	      console.log('%cTab\'s Id:', 'color: #4AF2A1', tabId);
+	      console.log('%cTab\'s URL:', 'color: #6638F0', url);
+	      if (tabId !== this.tabId) return;
+	      if (!url) return;
+	      if (url.indexOf('#') === -1) return;
+
+	      var hashPos = url.indexOf('#');
+	      var hash = undefined;
+	      try {
+	        var encodedHashString = url.slice(hashPos + 1);
+	        var decodedHashString = decodeURIComponent(encodedHashString);
+	        console.log('%cEncoded hash string:', 'color: #5E5C95', encodedHashString);
+	        console.log('%cDecoded hash string:', 'color: #BB4A51', decodedHashString);
+	        hash = JSON.parse(decodedHashString);
+	        console.log('%cHash:', 'color: #', hash);
+	      } catch (err) {
+	        console.error(err);
+	        return;
+	      }
+
+	      if (hash.credentialToken === this.credentialToken) {
+	        this._resolvePromise({
+	          credentialToken: hash.credentialToken,
+	          credentialSecret: hash.credentialSecret
+	        });
+
+	        chrome.tabs.remove(id);
+	      }
+	      console.groupEnd();
+	    }
+	  }, {
+	    key: '_openPopup',
+	    value: function _openPopup() {
+	      var _this2 = this;
+
+	      // Open the oauth popup
+	      console.group('Open Popup');
+	      console.log('%cLogin URL', 'color: #4AF2A1', this.loginUrl);
+	      chrome.tabs.create({
+	        url: this.loginUrl
+	      }, function (tab) {
+	        _this2.tabId = tab.id;
+	      });
+	      console.log('%cPopup tab\'s Id', 'color: #6638F0', this.tabId);
+	      console.groupEnd();
+	    }
+	  }, {
+	    key: 'init',
+	    value: function init() {
+	      this._openPopup();
+	      this._startPolling();
+	      return this._credentialSecretPromise.then(function (credentialSecret) {
+	        console.log('Before close Popup');
+	        console.log(credentialSecret);
+	        return credentialSecret;
+	      });
+	    }
+	  }]);
+
+	  return ChromeOauthFlow;
+	})();
+
+	exports['default'] = ChromeOauthFlow;
+	module.exports = exports['default'];
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -694,19 +820,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _urlParse2 = _interopRequireDefault(_urlParse);
 
-	var _libGenerateCredentialToken = __webpack_require__(8);
+	var _libGenerateCredentialToken = __webpack_require__(9);
 
 	var _libGenerateCredentialToken2 = _interopRequireDefault(_libGenerateCredentialToken);
 
-	var _libGetOauthState = __webpack_require__(9);
+	var _libGetOauthState = __webpack_require__(10);
 
 	var _libGetOauthState2 = _interopRequireDefault(_libGetOauthState);
 
-	var _libGetOauthClientId = __webpack_require__(10);
+	var _libGetOauthClientId = __webpack_require__(11);
 
 	var _libGetOauthClientId2 = _interopRequireDefault(_libGetOauthClientId);
 
-	var _libGetOauthProtocol = __webpack_require__(11);
+	var _libGetOauthProtocol = __webpack_require__(12);
 
 	var _libGetOauthProtocol2 = _interopRequireDefault(_libGetOauthProtocol);
 
@@ -742,7 +868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -763,7 +889,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -788,7 +914,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -805,7 +931,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -826,7 +952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -842,19 +968,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _urlParse2 = _interopRequireDefault(_urlParse);
 
-	var _libGenerateCredentialToken = __webpack_require__(8);
+	var _libGenerateCredentialToken = __webpack_require__(9);
 
 	var _libGenerateCredentialToken2 = _interopRequireDefault(_libGenerateCredentialToken);
 
-	var _libGetOauthState = __webpack_require__(9);
+	var _libGetOauthState = __webpack_require__(10);
 
 	var _libGetOauthState2 = _interopRequireDefault(_libGetOauthState);
 
-	var _libGetOauthClientId = __webpack_require__(10);
+	var _libGetOauthClientId = __webpack_require__(11);
 
 	var _libGetOauthClientId2 = _interopRequireDefault(_libGetOauthClientId);
 
-	var _libGetOauthProtocol = __webpack_require__(11);
+	var _libGetOauthProtocol = __webpack_require__(12);
 
 	var _libGetOauthProtocol2 = _interopRequireDefault(_libGetOauthProtocol);
 
