@@ -548,126 +548,134 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	var _urlParse = __webpack_require__(1);
 
 	var _urlParse2 = _interopRequireDefault(_urlParse);
 
 	var BrowserOauthFlow = (function () {
-	    function BrowserOauthFlow(_ref) {
-	        var _this = this;
+	  function BrowserOauthFlow(_ref) {
+	    var _this = this;
 
-	        var credentialToken = _ref.credentialToken;
-	        var host = _ref.host;
-	        var loginUrl = _ref.loginUrl;
+	    var credentialToken = _ref.credentialToken;
+	    var host = _ref.host;
+	    var loginUrl = _ref.loginUrl;
 
-	        _classCallCheck(this, BrowserOauthFlow);
+	    _classCallCheck(this, BrowserOauthFlow);
 
-	        this.credentialToken = credentialToken;
-	        this.host = host;
-	        this.loginUrl = loginUrl;
-	        this._credentialSecretPromise = new Promise(function (resolve, reject) {
-	            _this._resolvePromise = resolve;
-	            _this._rejectPromise = reject;
-	        });
+	    this.credentialToken = credentialToken;
+	    this.host = host;
+	    this.loginUrl = loginUrl;
+	    this._credentialSecretPromise = new Promise(function (resolve, reject) {
+	      _this._resolvePromise = resolve;
+	      _this._rejectPromise = reject;
+	    });
+	  }
+
+	  _createClass(BrowserOauthFlow, [{
+	    key: '_startPolling',
+	    value: function _startPolling() {
+	      var _this2 = this;
+
+	      console.group('Start Polling');
+	      console.log('%cHost', 'color: #4AF2A1', this.host);
+	      console.log('%cCredentail Token', 'color: #6638F0', this.credentialToken);
+	      var request = JSON.stringify({
+	        credentialToken: this.credentialToken
+	      });
+	      this.intervalId = window.setInterval(function () {
+	        _this2.popup.postMessage(request, _this2.host);
+	      }, 100);
+	      window.addEventListener("message", this._onMessage.bind(this));
+	      console.groupEnd();
 	    }
+	  }, {
+	    key: '_stopPolling',
+	    value: function _stopPolling() {
+	      window.clearInterval(this.intervalId);
+	    }
+	  }, {
+	    key: '_onMessage',
+	    value: function _onMessage(_ref2) {
+	      var data = _ref2.data;
+	      var origin = _ref2.origin;
 
-	    _createClass(BrowserOauthFlow, [{
-	        key: "_startPolling",
-	        value: function _startPolling() {
-	            var _this2 = this;
+	      try {
+	        var message = JSON.parse(data);
+	        if ((0, _urlParse2['default'])(origin).host !== this.host) {
+	          return;
+	        }
+	        if (message.credentialToken === this.credentialToken) {
+	          this._resolvePromise({
+	            credentialToken: message.credentialToken,
+	            credentialSecret: message.credentialSecret
+	          });
+	        }
+	        if (message.error) {
+	          this._rejectPromise(message.error);
+	        }
+	      } catch (ignore) {
+	        /*
+	         *   Simply ignore messages that:
+	         *       - are not JSON strings
+	         *       - don't match our `host`
+	         *       - dont't match our `credentialToken`
+	         */
+	      }
+	    }
+	  }, {
+	    key: '_openPopup',
+	    value: function _openPopup() {
+	      // Open the oauth popup
+	      console.group('Open Popup');
+	      console.log('%cLogin URL', 'color: #F6CD77', this.loginUrl);
+	      this.popup = window.open(this.loginUrl, "_blank", "location=no,toolbar=no");
+	      console.log('%cPopup window', 'color: #BB4A51', this.popup);
+	      // If the focus property exists, it's a function and it needs to be
+	      // called in order to focus the popup
+	      if (this.popup.focus) {
+	        this.popup.focus();
+	      }
+	      console.groupEnd();
+	    }
+	  }, {
+	    key: '_closePopup',
+	    value: function _closePopup() {
+	      this.popup.close();
+	    }
+	  }, {
+	    key: 'init',
+	    value: function init() {
+	      var _this3 = this;
 
-	            var request = JSON.stringify({
-	                credentialToken: this.credentialToken
-	            });
-	            this.intervalId = window.setInterval(function () {
-	                _this2.popup.postMessage(request, _this2.host);
-	            }, 100);
-	            window.addEventListener("message", this._onMessage.bind(this));
-	        }
-	    }, {
-	        key: "_stopPolling",
-	        value: function _stopPolling() {
-	            window.clearInterval(this.intervalId);
-	        }
-	    }, {
-	        key: "_onMessage",
-	        value: function _onMessage(_ref2) {
-	            var data = _ref2.data;
-	            var origin = _ref2.origin;
+	      this._openPopup();
+	      this._startPolling();
+	      return this._credentialSecretPromise.then(function (credentialSecret) {
+	        console.log('Before close Popup');
+	        _this3._stopPolling();
+	        _this3._closePopup();
+	        console.log(credentialSecret);
+	        return credentialSecret;
+	      });
+	    }
+	  }]);
 
-	            try {
-	                var message = JSON.parse(data);
-	                if ((0, _urlParse2["default"])(origin).host !== this.host) {
-	                    return;
-	                }
-	                if (message.credentialToken === this.credentialToken) {
-	                    this._resolvePromise({
-	                        credentialToken: message.credentialToken,
-	                        credentialSecret: message.credentialSecret
-	                    });
-	                }
-	                if (message.error) {
-	                    this._rejectPromise(message.error);
-	                }
-	            } catch (ignore) {
-	                /*
-	                *   Simply ignore messages that:
-	                *       - are not JSON strings
-	                *       - don't match our `host`
-	                *       - dont't match our `credentialToken`
-	                */
-	            }
-	        }
-	    }, {
-	        key: "_openPopup",
-	        value: function _openPopup() {
-	            // Open the oauth popup
-	            this.popup = window.open(this.loginUrl, "_blank", "location=no,toolbar=no");
-	            // If the focus property exists, it's a function and it needs to be
-	            // called in order to focus the popup
-	            if (this.popup.focus) {
-	                this.popup.focus();
-	            }
-	        }
-	    }, {
-	        key: "_closePopup",
-	        value: function _closePopup() {
-	            this.popup.close();
-	        }
-	    }, {
-	        key: "init",
-	        value: function init() {
-	            var _this3 = this;
-
-	            this._openPopup();
-	            this._startPolling();
-	            return this._credentialSecretPromise.then(function (credentialSecret) {
-	                console.log('Before close Popup');
-	                _this3._stopPolling();
-	                _this3._closePopup();
-	                console.log(credentialSecret);
-	                return credentialSecret;
-	            });
-	        }
-	    }]);
-
-	    return BrowserOauthFlow;
+	  return BrowserOauthFlow;
 	})();
 
-	exports["default"] = BrowserOauthFlow;
-	module.exports = exports["default"];
+	exports['default'] = BrowserOauthFlow;
+	module.exports = exports['default'];
 
 /***/ },
 /* 7 */
