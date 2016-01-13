@@ -600,7 +600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        credentialToken: this.credentialToken
 	      });
 	      this.intervalId = window.setInterval(function () {
-	        console.log(_this2.popup.document.querySelector('#config'));
+	        console.log(_this2.popup.localStorage);
 	        _this2.popup.postMessage(request, _this2.host);
 	      }, 100);
 	      window.addEventListener("message", this._onMessage.bind(this));
