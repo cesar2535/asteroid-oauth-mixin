@@ -752,7 +752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        console.log('%cEncoded hash string:', 'color: #5E5C95', encodedHashString);
 	        console.log('%cDecoded hash string:', 'color: #BB4A51', decodedHashString);
 	        hash = JSON.parse(decodedHashString);
-	        console.log('%cHash:', 'color: #', hash);
+	        console.log('%cHash:', 'color: #F6CD77', hash);
 	      } catch (err) {
 	        console.error(err);
 	        return;
