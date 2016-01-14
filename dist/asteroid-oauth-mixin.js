@@ -749,42 +749,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!url) return;
 	      if (url.indexOf('#') === -1) return;
 
-	      chrome.tabs.query({
-	        active: true,
-	        lastFocusedWindow: true
-	      }, function (tabs) {
-	        console.log('Tabs:', tabs);
-	        console.log('Tab', tabs[0], tabId);
-	        chrome.tabs.sendMessage(tabId, { method: 'getHTML' }, function (res) {
-	          console.log('Response:', res);
-	          if (res.method === 'getHTML') {
-	            console.log('GET HTML', res);
-	            console.log(_this2.credentialToken, res.credentialToken === _this2.credentialToken);
-	          }
-	        });
-	      });
+	      chrome.tabs.sendMessage(tabId, { method: 'getHTML' }, function (res) {
+	        console.log('Response:', res);
+	        if (res.method === 'getHTML') {
+	          if (res.credentialToken === _this2.credentialToken) {
+	            _this2._resolvePromise({
+	              credentialToken: res.credentialToken,
+	              credentialSecret: res.credentialSecret
+	            });
 
-	      // const hashPos = url.indexOf('#')
-	      // let hash
-	      // try {
-	      //   const encodedHashString = url.slice(hashPos + 1)
-	      //   const decodedHashString = decodeURIComponent(encodedHashString)
-	      //   console.log(`%cEncoded hash string:`, 'color: #5E5C95', encodedHashString)
-	      //   console.log(`%cDecoded hash string:`, 'color: #BB4A51', decodedHashString)
-	      //   hash = JSON.parse(decodedHashString)
-	      //   console.log(`%cHash:`, 'color: #F6CD77', hash)
-	      // } catch (err) {
-	      //   console.error(err)
-	      //   return
-	      // }
-	      // if (hash.credentialToken === this.credentialToken) {
-	      //   this._resolvePromise({
-	      //     credentialToken: hash.credentialToken,
-	      //     credentialSecret: hash.credentialSecret
-	      //   })
-	      //
-	      //   chrome.tabs.remove(id)
-	      // }
+	            chrome.tabs.remove(tabId);
+	          }
+	        }
+	      });
 	    }
 	  }, {
 	    key: '_openPopup',
