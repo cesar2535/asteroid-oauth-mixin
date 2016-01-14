@@ -751,9 +751,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        active: true,
 	        lastFocusedWindow: true
 	      }, function (tabs) {
+	        console.log('Tabs:', tabs);
+	        console.log('Tab', tabs[0]);
 	        chrome.runtime.sendMessage({ tabId: tabs[0].id, method: 'getHTML' }, function (res) {
+	          console.log('Response:', res);
 	          if (res.method === 'getHTML') {
-	            console.log(res);
+	            console.log('GET HTML', res);
 	          }
 	        });
 	      });

@@ -37,9 +37,12 @@ export default class ChromeOauthFlow {
       active: true,
       lastFocusedWindow: true
     }, tabs => {
+      console.log('Tabs:', tabs)
+      console.log(`Tab`, tabs[0])
       chrome.runtime.sendMessage({ tabId: tabs[0].id, method: 'getHTML' }, function (res) {
+        console.log('Response:', res)
         if (res.method === 'getHTML') {
-          console.log(res)
+          console.log('GET HTML', res)
         }
       })
     })
