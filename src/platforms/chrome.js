@@ -39,10 +39,11 @@ export default class ChromeOauthFlow {
     }, tabs => {
       console.log('Tabs:', tabs)
       console.log(`Tab`, tabs[0], tabId)
-      chrome.tabs.sendMessage(tabId, { tabId: tabs[0].id, method: 'getHTML' }, function (res) {
+      chrome.tabs.sendMessage(tabId, { method: 'getHTML' }, res => {
         console.log('Response:', res)
         if (res.method === 'getHTML') {
           console.log('GET HTML', res)
+          console.log(this.credentialToken, res.credentialToken === this.credentialToken);
         }
       })
     })

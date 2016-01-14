@@ -739,6 +739,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_onTabUpdated',
 	    value: function _onTabUpdated(tabId, changeInfo) {
+	      var _this2 = this;
+
 	      var url = changeInfo.url;
 	      console.log('Change Info:', changeInfo);
 	      console.log('%cTab\'s Id:', 'color: #4AF2A1', tabId);
@@ -753,10 +755,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }, function (tabs) {
 	        console.log('Tabs:', tabs);
 	        console.log('Tab', tabs[0], tabId);
-	        chrome.tabs.sendMessage(tabId, { tabId: tabs[0].id, method: 'getHTML' }, function (res) {
+	        chrome.tabs.sendMessage(tabId, { method: 'getHTML' }, function (res) {
 	          console.log('Response:', res);
 	          if (res.method === 'getHTML') {
 	            console.log('GET HTML', res);
+	            console.log(_this2.credentialToken, res.credentialToken === _this2.credentialToken);
 	          }
 	        });
 	      });
@@ -786,7 +789,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_openPopup',
 	    value: function _openPopup() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      // Open the oauth popup
 	      console.group('Open Popup');
@@ -794,7 +797,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      chrome.tabs.create({
 	        url: this.loginUrl
 	      }, function (tab) {
-	        _this2.tabId = tab.id;
+	        _this3.tabId = tab.id;
 	      });
 	      console.log('%cPopup tab\'s Id', 'color: #6638F0', this.tabId);
 	      console.groupEnd();
