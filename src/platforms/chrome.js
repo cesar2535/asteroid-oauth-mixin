@@ -33,27 +33,39 @@ export default class ChromeOauthFlow {
     if (!url) return
     if (url.indexOf('#') === -1) return
 
-    const hashPos = url.indexOf('#')
-    let hash
-    try {
-      const encodedHashString = url.slice(hashPos + 1)
-      const decodedHashString = decodeURIComponent(encodedHashString)
-      console.log(`%cEncoded hash string:`, 'color: #5E5C95', encodedHashString)
-      console.log(`%cDecoded hash string:`, 'color: #BB4A51', decodedHashString)
-      hash = JSON.parse(decodedHashString)
-      console.log(`%cHash:`, 'color: #F6CD77', hash)
-    } catch (err) {
-      console.error(err)
-      return
-    }
-    if (hash.credentialToken === this.credentialToken) {
-      this._resolvePromise({
-        credentialToken: hash.credentialToken,
-        credentialSecret: hash.credentialSecret
+    chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true
+    }, tabs => {
+      chrome.runtime.sendMessage({ tabId: tabs[0].id, method: 'getHTML' }, function (res) {
+        if (res.method === 'getHTML') {
+          console.log(res)
+        }
       })
+    })
 
-      chrome.tabs.remove(id)
-    }
+
+    // const hashPos = url.indexOf('#')
+    // let hash
+    // try {
+    //   const encodedHashString = url.slice(hashPos + 1)
+    //   const decodedHashString = decodeURIComponent(encodedHashString)
+    //   console.log(`%cEncoded hash string:`, 'color: #5E5C95', encodedHashString)
+    //   console.log(`%cDecoded hash string:`, 'color: #BB4A51', decodedHashString)
+    //   hash = JSON.parse(decodedHashString)
+    //   console.log(`%cHash:`, 'color: #F6CD77', hash)
+    // } catch (err) {
+    //   console.error(err)
+    //   return
+    // }
+    // if (hash.credentialToken === this.credentialToken) {
+    //   this._resolvePromise({
+    //     credentialToken: hash.credentialToken,
+    //     credentialSecret: hash.credentialSecret
+    //   })
+    //
+    //   chrome.tabs.remove(id)
+    // }
   }
 
   _openPopup() {
