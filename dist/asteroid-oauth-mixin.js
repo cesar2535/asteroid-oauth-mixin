@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 	exports.init = init;
 	exports.registerOauthProvider = registerOauthProvider;
@@ -88,34 +88,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	var providers = { google: google, facebook: facebook };
 
 	function init(_ref) {
-	    var endpoint = _ref.endpoint;
-	    var platform = _ref.platform;
+	  var endpoint = _ref.endpoint;
+	  var platform = _ref.platform;
 
-	    this.subscribe("meteor.loginServiceConfiguration");
-	    this.oauth = {
-	        platform: platform,
-	        url: (0, _urlParse2["default"])(endpoint)
-	    };
+	  this.subscribe("meteor.loginServiceConfiguration");
+	  this.oauth = {
+	    platform: platform,
+	    url: (0, _urlParse2["default"])(endpoint)
+	  };
 	}
 
 	function registerOauthProvider(provider) {
-	    providers[provider.name] = provider;
+	  providers[provider.name] = provider;
 	}
 
 	function loginWith(providerName, scope) {
-	    var _this = this;
+	  var _this = this;
 
-	    var options = providers[providerName].getOptions({
-	        url: this.oauth.url,
-	        // The mixin which implements collections must also implement the
-	        // getServiceConfig method
-	        configCollection: this.getServiceConfig(providerName),
-	        scope: scope
+	  var options = providers[providerName].getOptions({
+	    url: this.oauth.url,
+	    // The mixin which implements collections must also implement the
+	    // getServiceConfig method
+	    configCollection: this.getServiceConfig(providerName),
+	    scope: scope
+	  });
+
+	  return (0, _libOpenOauthPopup2["default"])(this.oauth.platform, this.oauth.url.host, options.credentialToken, options.loginUrl, function (oauth) {
+	    return _this.login({
+	      oauth: oauth
 	    });
-	    console.log(options);
-	    return (0, _libOpenOauthPopup2["default"])(this.oauth.platform, this.oauth.url.host, options.credentialToken, options.loginUrl, function (oauth) {
-	        return _this.login({ oauth: oauth });
-	    });
+	  });
 	}
 
 /***/ },
@@ -737,51 +739,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_onTabUpdated',
 	    value: function _onTabUpdated(tabId, changeInfo) {
-	      // const url = changeInfo.url
-	      // console.log(`%cTab's Id:`, 'color: #4AF2A1', tabId)
-	      // console.log(`%cTab's URL:`, 'color: #6638F0', url);
-	      // if (tabId !== this.tabId) return
-	      // if (!url) return
-	      // if (url.indexOf('#') === -1) return
-	      //
-	      // const hashPos = url.indexOf('#')
-	      // let hash
-	      // try {
-	      //   const encodedHashString = url.slice(hashPos + 1)
-	      //   const decodedHashString = decodeURIComponent(encodedHashString)
-	      //   console.log(`%cEncoded hash string:`, 'color: #5E5C95', encodedHashString)
-	      //   console.log(`%cDecoded hash string:`, 'color: #BB4A51', decodedHashString)
-	      //   hash = JSON.parse(decodedHashString)
-	      //   console.log(`%cHash:`, 'color: #F6CD77', hash)
-	      // } catch (err) {
-	      //   console.error(err)
-	      //   return
-	      // }
-	      // console.log(`Hash Token:`, hash.credentialToken)
-	      // console.log(`Hash Token:`, this.credentialToken)
-	      // if (hash.credentialToken === this.credentialToken) {
-	      //   this._resolvePromise({
-	      //     credentialToken: hash.credentialToken,
-	      //     credentialSecret: hash.credentialSecret
-	      //   })
-	      //
-	      //   chrome.tabs.remove(id)
-	      // }
-	      chrome.tabs.query({
-	        active: true,
-	        lastFocusedWindow: true
-	      }, function (tabs) {
-	        var tab = tabs[0];
-	        chrome.tabs.sendRequest(tab.id, { method: 'getHTML', tabId: tab.id }, function (response) {
-	          if (!response) return;
-	          if (response.method === 'getHTML') {
-	            console.log(response);
-	            console.log(response.html);
-	            console.log(JSON.parse(response.html));
-	            chrome.tabs.remote(response.tabId);
-	          }
+	      var url = changeInfo.url;
+	      console.log('Change Info:', changeInfo);
+	      console.log('%cTab\'s Id:', 'color: #4AF2A1', tabId);
+	      console.log('%cTab\'s URL:', 'color: #6638F0', url);
+	      if (tabId !== this.tabId) return;
+	      if (!url) return;
+	      if (url.indexOf('#') === -1) return;
+
+	      var hashPos = url.indexOf('#');
+	      var hash = undefined;
+	      try {
+	        var encodedHashString = url.slice(hashPos + 1);
+	        var decodedHashString = decodeURIComponent(encodedHashString);
+	        console.log('%cEncoded hash string:', 'color: #5E5C95', encodedHashString);
+	        console.log('%cDecoded hash string:', 'color: #BB4A51', decodedHashString);
+	        hash = JSON.parse(decodedHashString);
+	        console.log('%cHash:', 'color: #F6CD77', hash);
+	      } catch (err) {
+	        console.error(err);
+	        return;
+	      }
+	      if (hash.credentialToken === this.credentialToken) {
+	        this._resolvePromise({
+	          credentialToken: hash.credentialToken,
+	          credentialSecret: hash.credentialSecret
 	        });
-	      });
+
+	        chrome.tabs.remove(id);
+	      }
 	    }
 	  }, {
 	    key: '_openPopup',
